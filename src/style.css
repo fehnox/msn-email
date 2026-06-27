@@ -1,0 +1,451 @@
+/* ─────────────────────────────────────────
+   style.css — MSN Mail
+   Visual: MSN Messenger + Windows XP era
+   ───────────────────────────────────────── */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --msn-blue-dark:  #0d2137;
+  --msn-blue:       #1e5799;
+  --msn-blue-mid:   #2989d8;
+  --msn-blue-light: #207cca;
+  --msn-blue-grad:  linear-gradient(to bottom, #1e5799 0%, #2989d8 50%, #207cca 100%);
+  --msn-orange:     #f79226;
+  --msn-green:      #5cb85c;
+  --msn-red:        #d9534f;
+  --surface:        #f0f4f8;
+  --surface2:       #e4ecf4;
+  --border:         #b8cfe0;
+  --text:           #1a2a3a;
+  --text-muted:     #6a8090;
+  --unread-bg:      #eaf4ff;
+  --unread-border:  #2989d8;
+  --selected-bg:    #cce4f7;
+  --white:          #ffffff;
+  --font:           'Segoe UI', Tahoma, Arial, sans-serif;
+}
+
+html, body {
+  height: 100%;
+  font-family: var(--font);
+  background: var(--msn-blue-dark);
+  color: var(--text);
+  user-select: none;
+  overflow: hidden;
+}
+
+/* ── TITLEBAR ── */
+.titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 34px;
+  background: var(--msn-blue-grad);
+  -webkit-app-region: drag;
+  padding: 0 0 0 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.15);
+}
+
+.titlebar-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.titlebar-logo {
+  font-size: 1rem;
+  color: white;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.4));
+}
+
+.titlebar-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: white;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+  letter-spacing: 0.02em;
+}
+
+.titlebar-controls {
+  display: flex;
+  -webkit-app-region: no-drag;
+}
+
+.tb-btn {
+  width: 46px;
+  height: 34px;
+  border: none;
+  background: transparent;
+  color: white;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: background 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.tb-btn:hover { background: rgba(255,255,255,0.15); }
+.tb-close:hover { background: #e81123 !important; }
+
+/* ── TOOLBAR ── */
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 44px;
+  background: var(--msn-blue-grad);
+  border-bottom: 2px solid var(--msn-orange);
+  padding: 0 12px;
+  gap: 1rem;
+}
+
+.toolbar-accounts {
+  display: flex;
+  gap: 4px;
+}
+
+.acc-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.1);
+  color: white;
+  font-family: var(--font);
+  font-size: 0.78rem;
+  cursor: pointer;
+  border-radius: 3px;
+  transition: background 0.15s;
+}
+.acc-btn:hover { background: rgba(255,255,255,0.2); }
+.acc-btn.active {
+  background: rgba(255,255,255,0.3);
+  border-color: rgba(255,255,255,0.5);
+  font-weight: 600;
+}
+
+.acc-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.acc-dot.gmail   { background: #ea4335; }
+.acc-dot.outlook { background: #0078d4; }
+
+.toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.action-btn {
+  padding: 4px 10px;
+  border: 1px solid rgba(255,255,255,0.25);
+  background: rgba(255,255,255,0.12);
+  color: white;
+  font-family: var(--font);
+  font-size: 0.75rem;
+  cursor: pointer;
+  border-radius: 3px;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+.action-btn:hover { background: rgba(255,255,255,0.25); }
+
+.search-box input {
+  padding: 4px 10px;
+  border: 1px solid rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.9);
+  border-radius: 3px;
+  font-family: var(--font);
+  font-size: 0.78rem;
+  width: 200px;
+  outline: none;
+  color: var(--text);
+}
+.search-box input:focus {
+  border-color: var(--msn-orange);
+  background: white;
+}
+
+/* ── APP BODY ── */
+.app-body {
+  display: grid;
+  grid-template-columns: 180px 320px 1fr;
+  height: calc(100vh - 34px - 44px - 24px);
+  overflow: hidden;
+  background: var(--surface);
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  background: var(--surface2);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-header {
+  padding: 8px 12px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: white;
+  background: var(--msn-blue-grad);
+  border-bottom: 1px solid var(--border);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.sender-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  transition: background 0.1s;
+}
+.sender-item:hover { background: rgba(41,137,216,0.1); }
+.sender-item.active { background: var(--selected-bg); }
+
+.sender-avatar {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--msn-blue-grad);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  text-transform: uppercase;
+}
+
+.sender-info { flex: 1; min-width: 0; }
+.sender-name {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sender-count {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+}
+
+.sender-badge {
+  background: var(--msn-orange);
+  color: white;
+  font-size: 0.6rem;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 8px;
+  min-width: 18px;
+  text-align: center;
+}
+
+/* ── LISTA DE EMAILS ── */
+.email-list-panel {
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 12px;
+  background: var(--msn-blue-grad);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-bottom: 1px solid var(--border);
+}
+
+.email-count {
+  font-size: 0.68rem;
+  opacity: 0.8;
+  font-weight: 400;
+}
+
+.email-list {
+  overflow-y: auto;
+  flex: 1;
+}
+
+.email-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 10px;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  cursor: pointer;
+  transition: background 0.1s;
+  position: relative;
+}
+.email-item:hover { background: rgba(41,137,216,0.08); }
+.email-item.selected { background: var(--selected-bg); }
+.email-item.unread {
+  background: var(--unread-bg);
+  border-left: 3px solid var(--unread-border);
+}
+.email-item.unread:hover { background: rgba(41,137,216,0.15); }
+
+.email-avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--msn-blue-grad);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  text-transform: uppercase;
+}
+
+.email-content { flex: 1; min-width: 0; }
+
+.email-from {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.email-item.unread .email-from { color: var(--msn-blue); }
+
+.email-subject {
+  font-size: 0.75rem;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 1px;
+}
+.email-item.unread .email-subject { font-weight: 600; }
+
+.email-preview-text {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 1px;
+}
+
+.email-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+  flex-shrink: 0;
+}
+
+.email-time {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+}
+
+.email-account-badge {
+  font-size: 0.58rem;
+  padding: 1px 5px;
+  border-radius: 3px;
+  color: white;
+  font-weight: 600;
+}
+.badge-gmail   { background: #ea4335; }
+.badge-outlook { background: #0078d4; }
+
+/* ── PREVIEW ── */
+.email-preview {
+  background: white;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.preview-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-muted);
+  gap: 1rem;
+}
+.preview-empty-icon {
+  font-size: 3rem;
+  opacity: 0.3;
+}
+.preview-empty p { font-size: 0.85rem; }
+
+.preview-header {
+  padding: 16px 20px;
+  border-bottom: 2px solid var(--surface2);
+  background: var(--surface);
+}
+
+.preview-subject {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.preview-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.preview-meta-row {
+  display: flex;
+  gap: 6px;
+  font-size: 0.78rem;
+}
+.preview-meta-label { color: var(--text-muted); min-width: 32px; }
+.preview-meta-value { color: var(--text); font-weight: 500; }
+
+.preview-body {
+  padding: 20px;
+  font-size: 0.88rem;
+  line-height: 1.7;
+  color: var(--text);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* ── STATUS BAR ── */
+.statusbar {
+  height: 24px;
+  background: var(--msn-blue-grad);
+  border-top: 1px solid rgba(255,255,255,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 10px;
+  font-size: 0.68rem;
+  color: rgba(255,255,255,0.85);
+}
+
+.statusbar-right { opacity: 0.7; }
+
+/* ── SCROLLBAR ESTILO MSN ── */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--surface2); }
+::-webkit-scrollbar-thumb {
+  background: var(--msn-blue-mid);
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--msn-blue); }

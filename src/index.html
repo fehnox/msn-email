@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MSN Mail</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700&family=Tahoma&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ── BARRA DE TÍTULO CUSTOMIZADA ── -->
+  <div class="titlebar" id="titlebar">
+    <div class="titlebar-left">
+      <div class="titlebar-logo">✉</div>
+      <span class="titlebar-title">MSN Mail — Fernando Brígida</span>
+    </div>
+    <div class="titlebar-controls">
+      <button class="tb-btn tb-min" id="btnMin" title="Minimizar">─</button>
+      <button class="tb-btn tb-max" id="btnMax" title="Maximizar">□</button>
+      <button class="tb-btn tb-close" id="btnClose" title="Fechar">✕</button>
+    </div>
+  </div>
+
+  <!-- ── TOOLBAR ── -->
+  <div class="toolbar">
+    <div class="toolbar-accounts">
+      <button class="acc-btn active" data-account="all">📬 Todas as contas</button>
+      <button class="acc-btn" data-account="gmail">
+        <span class="acc-dot gmail"></span> Gmail
+      </button>
+      <button class="acc-btn" data-account="outlook">
+        <span class="acc-dot outlook"></span> Outlook
+      </button>
+    </div>
+    <div class="toolbar-actions">
+      <button class="action-btn" id="btnRefresh" title="Verificar emails">🔄 Verificar</button>
+      <button class="action-btn" id="btnSimulate" title="Simular email">🧪 Testar notificação</button>
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="🔍  Pesquisar emails..." />
+      </div>
+    </div>
+  </div>
+
+  <!-- ── LAYOUT PRINCIPAL ── -->
+  <div class="app-body">
+
+    <!-- SIDEBAR: lista de remetentes -->
+    <aside class="sidebar">
+      <div class="sidebar-header">Remetentes</div>
+      <div class="sender-list" id="senderList">
+        <!-- gerado via JS -->
+      </div>
+    </aside>
+
+    <!-- LISTA DE EMAILS -->
+    <div class="email-list-panel">
+      <div class="panel-header">
+        <span id="panelTitle">Todos os emails</span>
+        <span class="email-count" id="emailCount">0 emails</span>
+      </div>
+      <div class="email-list" id="emailList">
+        <!-- gerado via JS -->
+      </div>
+    </div>
+
+    <!-- PREVIEW DO EMAIL -->
+    <div class="email-preview" id="emailPreview">
+      <div class="preview-empty">
+        <div class="preview-empty-icon">✉</div>
+        <p>Selecione um email para visualizar</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── STATUS BAR ── -->
+  <div class="statusbar">
+    <span id="statusText">Pronto · Última verificação: --:--</span>
+    <span class="statusbar-right">MSN Mail v1.0 · <span id="statusAccount">2 contas</span></span>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>

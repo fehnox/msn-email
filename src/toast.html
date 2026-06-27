@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: transparent;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      overflow: hidden;
+      animation: slideUp 0.3s ease-out forwards;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+
+    .toast {
+      width: 320px;
+      background: linear-gradient(to bottom, #1e5799, #2989d8);
+      border: 1px solid #0d2137;
+      border-radius: 4px 4px 0 0;
+      box-shadow: -2px -2px 8px rgba(0,0,0,0.4);
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    /* Barra laranja topo estilo MSN */
+    .toast-topbar {
+      height: 4px;
+      background: linear-gradient(to right, #f79226, #ffb347);
+    }
+
+    .toast-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 10px 4px;
+    }
+
+    .toast-title {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .toast-close {
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.7);
+      font-size: 0.9rem;
+      cursor: pointer;
+      padding: 0 2px;
+      line-height: 1;
+    }
+    .toast-close:hover { color: white; }
+
+    .toast-body {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 6px 10px 10px;
+    }
+
+    .toast-avatar {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      border: 2px solid rgba(255,255,255,0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+      color: white;
+      font-weight: 700;
+      font-size: 0.8rem;
+    }
+
+    .toast-content { flex: 1; min-width: 0; }
+
+    .toast-from {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: white;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .toast-subject {
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.9);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 1px;
+    }
+
+    .toast-preview {
+      font-size: 0.65rem;
+      color: rgba(255,255,255,0.7);
+      margin-top: 2px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      line-height: 1.4;
+    }
+
+    .toast-account {
+      font-size: 0.6rem;
+      color: rgba(255,255,255,0.6);
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="toast" id="toast">
+    <div class="toast-topbar"></div>
+    <div class="toast-header">
+      <div class="toast-title">✉ Novo email recebido</div>
+      <button class="toast-close" id="btnClose">✕</button>
+    </div>
+    <div class="toast-body">
+      <div class="toast-avatar" id="toastAvatar">?</div>
+      <div class="toast-content">
+        <div class="toast-from"    id="toastFrom">—</div>
+        <div class="toast-subject" id="toastSubject">—</div>
+        <div class="toast-preview" id="toastPreview">—</div>
+        <div class="toast-account" id="toastAccount">—</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function getInitials(name) {
+      return name.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase();
+    }
+
+    // Recebe dados do email
+    window.electronAPI.onToastData((data) => {
+      document.getElementById('toastAvatar').textContent  = getInitials(data.from);
+      document.getElementById('toastFrom').textContent    = data.from;
+      document.getElementById('toastSubject').textContent = data.subject;
+      document.getElementById('toastPreview').textContent = data.preview;
+      document.getElementById('toastAccount').textContent = `📧 ${data.account} · ${data.time}`;
+    });
+
+    // Fechar
+    document.getElementById('btnClose').addEventListener('click', (e) => {
+      e.stopPropagation();
+      window.electronAPI.toastClose();
+    });
+
+    // Clicar no toast abre o email
+    document.getElementById('toast').addEventListener('click', () => {
+      window.electronAPI.toastOpenEmail('test-001');
+    });
+  </script>
+</body>
+</html>
