@@ -205,3 +205,8 @@ window.electronAPI.onOpenEmail((id) => openEmail(id));
 renderSenders();
 renderEmailList();
 updateStatus('Conectando ao Gmail...');
+
+// Adicionar conta
+document.getElementById('btnAddAccount').addEventListener('click', () => {
+  window.electronAPI.addAccount();
+});
