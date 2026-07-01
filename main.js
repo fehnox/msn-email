@@ -1,55 +1,30 @@
-const { app, BrowserWindow, ipcMain, screen, shell, Tray, Menu, nativeImage } = require('electron');
+ï»¿const { app, BrowserWindow, ipcMain, screen, Tray, Menu } = require('electron');
 const path = require('path');
 const sound = require('sound-play');
 const { authenticate, fetchEmails, markAsRead } = require('./mail/gmail');
 
-let mainWindow  = null;
-let toastWindow = null;
-let gmailAuth   = null;
+let mainWindow    = null;
+let toastWindow   = null;
+let tray          = null;
 let checkInterval = null;
+let accounts      = [];
 let lastEmailIds  = new Set();
-let tray = null;
+let initialized   = false;
 
 function playSound() {
-  try {
-    sound.play(path.join(__dirname, 'src/assets/notify.mp3'));
-  } catch(e) { console.log('Som indisponivel:', e.message); }
+  try { sound.play(path.join(__dirname, 'src/assets/notify.mp3')); } catch(e) {}
 }
 
 function createTray() {
-  const iconPath = path.join(__dirname, 'src/assets/tray-icon.png');
-  tray = new Tray(iconPath);
-
-  const contextMenu = Menu.buildFromTemplate([
-    {
-      label: 'Abrir MSN Mail',
-      click: () => {
-        mainWindow?.show();
-        mainWindow?.focus();
-      }
-    },
-    {
-      label: 'Verificar emails',
-      click: () => refreshEmails()
-    },
+  tray = new Tray(path.join(__dirname, 'src/assets/tray-icon.png'));
+  tray.setToolTip('MSN Mail');
+  tray.setContextMenu(Menu.buildFromTemplate([
+    { label: 'Abrir', click: () => { mainWindow?.show(); mainWindow?.focus(); } },
+    { label: 'Verificar emails', click: () => refreshAllEmails() },
     { type: 'separator' },
-    {
-      label: 'Fechar',
-      click: () => {
-        clearInterval(checkInterval);
-        app.quit();
-      }
-    }
-  ]);
-
-  tray.setToolTip('MSN Mail — Fernando Brigida');
-  tray.setContextMenu(contextMenu);
-
-  // Clique duplo abre a janela
-  tray.on('double-click', () => {
-    mainWindow?.show();
-    mainWindow?.focus();
-  });
+    { label: 'Fechar', click: () => { clearInterval(checkInterval); app.quit(); } }
+  ]));
+  tray.on('double-click', () => { mainWindow?.show(); mainWindow?.focus(); });
 }
 
 function createMainWindow() {
@@ -64,29 +39,12 @@ function createMainWindow() {
   });
   mainWindow.loadFile('src/index.html');
   mainWindow.once('ready-to-show', () => mainWindow.show());
-
-  // Ao fechar a janela, minimiza para bandeja em vez de fechar
-  mainWindow.on('close', (e) => {
-    e.preventDefault();
-    mainWindow.hide();
-    tray.displayBalloon({
-      title: 'MSN Mail',
-      content: 'Rodando em segundo plano. Clique duas vezes no icone para abrir.',
-      iconType: 'info'
-    });
-  });
-
-  mainWindow.on('closed', () => { mainWindow = null; });
+  mainWindow.on('close', (e) => { e.preventDefault(); mainWindow.hide(); });
 }
 
 function createToast(emailData) {
   if (toastWindow) { toastWindow.close(); toastWindow = null; }
   playSound();
-
-  // Atualiza tooltip da bandeja com contagem
-  const unreadCount = [...lastEmailIds].length;
-  tray?.setToolTip(`MSN Mail — ${unreadCount} emails`);
-
   const { width, height } = screen.getPrimaryDisplay().workAreaSize;
   toastWindow = new BrowserWindow({
     width: 320, height: 110,
@@ -107,27 +65,47 @@ function createToast(emailData) {
   });
 }
 
-async function initGmail() {
+async function initGmail(tokenFile = 'token.json', accountEmail = null) {
+  if (initialized && tokenFile === 'token.json') return;
+  if (tokenFile === 'token.json') initialized = true;
   try {
     mainWindow?.webContents.send('auth-status', { status: 'connecting', message: 'Conectando ao Gmail...' });
-    gmailAuth = await authenticate();
-    mainWindow?.webContents.send('auth-status', { status: 'connected', message: 'Gmail conectado!' });
-    await refreshEmails();
-    checkInterval = setInterval(checkNewEmails, 40 * 1000);
+    const client = await authenticate(tokenFile);
+    const email = accountEmail || 'fernando.fehnox@gmail.com';
+    accounts.push({ auth: client, email, tokenFile });
+    mainWindow?.webContents.send('auth-status', { status: 'connected', message: 'Gmail conectado: ' + email });
+    await refreshAllEmails();
+    if (!checkInterval) {
+      checkInterval = setInterval(checkNewEmails, 40 * 1000);
+    }
   } catch (err) {
     console.error('Erro Gmail:', err);
     mainWindow?.webContents.send('auth-status', { status: 'error', message: 'Erro: ' + err.message });
   }
 }
 
-async function refreshEmails() {
-  if (!gmailAuth) return;
+async function refreshAllEmails() {
+  if (accounts.length === 0) return;
   try {
     mainWindow?.webContents.send('loading', true);
-    const emails = await fetchEmails(gmailAuth, { maxResults: 25 });
-    emails.forEach(e => lastEmailIds.add(e.id));
-    mainWindow?.webContents.send('emails-loaded', emails);
+    let allEmails = [];
+    const seenIds = new Set();
+    for (const acc of accounts) {
+      const emails = await fetchEmails(acc.auth, { maxResults: 25 });
+      emails.forEach(e => {
+        if (!seenIds.has(e.id)) {
+          seenIds.add(e.id);
+          lastEmailIds.add(e.id);
+          e.accountEmail = acc.email;
+          allEmails.push(e);
+        }
+      });
+    }
+    allEmails.sort((a, b) => new Date(b.raw) - new Date(a.raw));
+    mainWindow?.webContents.send('emails-loaded', allEmails);
     mainWindow?.webContents.send('loading', false);
+    const unread = allEmails.filter(e => e.unread).length;
+    tray?.setToolTip('MSN Mail' + (unread > 0 ? ' - ' + unread + ' nao lidos' : ''));
   } catch (err) {
     console.error('Erro ao buscar emails:', err);
     mainWindow?.webContents.send('loading', false);
@@ -135,13 +113,15 @@ async function refreshEmails() {
 }
 
 async function checkNewEmails() {
-  if (!gmailAuth) return;
+  if (accounts.length === 0) return;
   try {
-    const emails = await fetchEmails(gmailAuth, { maxResults: 5, query: 'is:inbox is:unread newer_than:5m' });
-    const newEmails = emails.filter(e => !lastEmailIds.has(e.id));
-    if (newEmails.length > 0) {
-      newEmails.forEach(email => { lastEmailIds.add(email.id); createToast(email); });
-      await refreshEmails();
+    for (const acc of accounts) {
+      const emails = await fetchEmails(acc.auth, { maxResults: 5, query: 'is:inbox is:unread newer_than:1m' });
+      const newEmails = emails.filter(e => !lastEmailIds.has(e.id));
+      if (newEmails.length > 0) {
+        newEmails.forEach(email => { lastEmailIds.add(email.id); createToast(email); });
+        await refreshAllEmails();
+      }
     }
   } catch (err) {
     console.error('Erro ao verificar emails:', err);
@@ -154,14 +134,24 @@ ipcMain.on('window-close',     () => mainWindow?.hide());
 ipcMain.on('toast-close',      () => { toastWindow?.close(); toastWindow = null; });
 ipcMain.on('toast-open-email', (_, id) => {
   mainWindow?.webContents.send('open-email', id);
-  mainWindow?.show();
-  mainWindow?.focus();
+  mainWindow?.show(); mainWindow?.focus();
   toastWindow?.close(); toastWindow = null;
 });
-ipcMain.on('refresh-emails',   () => refreshEmails());
-ipcMain.on('connect-gmail',    () => initGmail());
+ipcMain.on('refresh-emails', () => refreshAllEmails());
+ipcMain.on('connect-gmail',  () => initGmail());
+ipcMain.on('add-account', (_, email) => {
+  const jaExiste = accounts.find(a => a.email === email);
+  if (jaExiste) {
+    mainWindow?.webContents.send('auth-status', { status: 'error', message: 'Conta ' + email + ' ja esta conectada!' });
+    return;
+  }
+  const tokenFile = 'token_' + email.replace('@', '_').replace(/\./g, '_') + '.json';
+  initGmail(tokenFile, email);
+});
 ipcMain.on('mark-as-read', async (_, id) => {
-  if (gmailAuth) { try { await markAsRead(gmailAuth, id); } catch(e) {} }
+  for (const acc of accounts) {
+    try { await markAsRead(acc.auth, id); } catch(e) {}
+  }
 });
 ipcMain.on('simulate-email', () => {
   createToast({
@@ -178,12 +168,5 @@ app.whenReady().then(() => {
   createMainWindow();
   mainWindow.once('ready-to-show', () => setTimeout(() => initGmail(), 1500));
 });
-
-app.on('window-all-closed', (e) => {
-  // Não fecha o app quando a janela fecha — fica na bandeja
-});
-
-app.on('before-quit', () => {
-  clearInterval(checkInterval);
-  tray?.destroy();
-});
+app.on('window-all-closed', () => {});
+app.on('before-quit', () => { clearInterval(checkInterval); tray?.destroy(); });

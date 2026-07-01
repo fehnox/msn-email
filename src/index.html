@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
@@ -9,76 +9,73 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-
-  <!-- ── BARRA DE TÍTULO CUSTOMIZADA ── -->
-  <div class="titlebar" id="titlebar">
+  <div class="titlebar">
     <div class="titlebar-left">
       <div class="titlebar-logo">✉</div>
-      <span class="titlebar-title">MSN Mail — Fernando Brígida</span>
+      <span class="titlebar-title">MSN Mail — Fernando Brigida</span>
     </div>
     <div class="titlebar-controls">
-      <button class="tb-btn tb-min" id="btnMin" title="Minimizar">─</button>
-      <button class="tb-btn tb-max" id="btnMax" title="Maximizar">□</button>
-      <button class="tb-btn tb-close" id="btnClose" title="Fechar">✕</button>
+      <button class="tb-btn tb-min" id="btnMin">─</button>
+      <button class="tb-btn tb-max" id="btnMax">□</button>
+      <button class="tb-btn tb-close" id="btnClose">✕</button>
     </div>
   </div>
 
-  <!-- ── TOOLBAR ── -->
   <div class="toolbar">
     <div class="toolbar-accounts">
       <button class="acc-btn active" data-account="all">📬 Todas as contas</button>
-      <button class="acc-btn" data-account="gmail">
-        <span class="acc-dot gmail"></span> Gmail
-      </button>
-      <button class="acc-btn" data-account="outlook">
-        <span class="acc-dot outlook"></span> Outlook
-      </button>
+      <button class="acc-btn" data-account="gmail"><span class="acc-dot gmail"></span> Gmail</button>
+      <button class="acc-btn btn-add-account" id="btnAddAccount">➕ Adicionar conta</button>
     </div>
     <div class="toolbar-actions">
-      <button class="action-btn" id="btnRefresh" title="Verificar emails">🔄 Verificar</button>
-      <button class="action-btn" id="btnSimulate" title="Simular email">🧪 Testar notificação</button>
+      <button class="action-btn" id="btnRefresh">🔄 Verificar</button>
+      <button class="action-btn" id="btnSimulate">🧪 Testar</button>
       <div class="search-box">
         <input type="text" id="searchInput" placeholder="🔍  Pesquisar emails..." />
       </div>
     </div>
   </div>
 
-  <!-- ── LAYOUT PRINCIPAL ── -->
-  <div class="app-body">
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <div class="modal-header">
+        <span>➕ Adicionar conta Gmail</span>
+        <button class="modal-close" id="modalClose">✕</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-desc">Digite o email Gmail que deseja adicionar.</p>
+        <input type="email" id="newAccountEmail" placeholder="seuemail@gmail.com" class="modal-input" />
+        <div class="modal-actions">
+          <button class="btn-modal-cancel" id="modalCancel">Cancelar</button>
+          <button class="btn-modal-confirm" id="modalConfirm">Conectar conta</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-    <!-- SIDEBAR: lista de remetentes -->
+  <div class="app-body">
     <aside class="sidebar">
       <div class="sidebar-header">Remetentes</div>
-      <div class="sender-list" id="senderList">
-        <!-- gerado via JS -->
-      </div>
+      <div class="sender-list" id="senderList"></div>
     </aside>
-
-    <!-- LISTA DE EMAILS -->
     <div class="email-list-panel">
       <div class="panel-header">
         <span id="panelTitle">Todos os emails</span>
         <span class="email-count" id="emailCount">0 emails</span>
       </div>
-      <div class="email-list" id="emailList">
-        <!-- gerado via JS -->
-      </div>
+      <div class="email-list" id="emailList"></div>
     </div>
-
-    <!-- PREVIEW DO EMAIL -->
     <div class="email-preview" id="emailPreview">
       <div class="preview-empty">
         <div class="preview-empty-icon">✉</div>
         <p>Selecione um email para visualizar</p>
       </div>
     </div>
-
   </div>
 
-  <!-- ── STATUS BAR ── -->
   <div class="statusbar">
-    <span id="statusText">Pronto · Última verificação: --:--</span>
-    <span class="statusbar-right">MSN Mail v1.0 · <span id="statusAccount">2 contas</span></span>
+    <span id="statusText">Conectando...</span>
+    <span class="statusbar-right">MSN Mail v1.0</span>
   </div>
 
   <script src="renderer.js"></script>

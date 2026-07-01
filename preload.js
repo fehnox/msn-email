@@ -1,6 +1,4 @@
-﻿// preload.js — Ponte segura entre Electron e interface (Etapa 2)
-const { contextBridge, ipcRenderer } = require('electron');
-
+﻿const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('electronAPI', {
   minimize:       () => ipcRenderer.send('window-minimize'),
   maximize:       () => ipcRenderer.send('window-maximize'),
@@ -8,6 +6,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   connectGmail:   () => ipcRenderer.send('connect-gmail'),
   refreshEmails:  () => ipcRenderer.send('refresh-emails'),
   markAsRead:     (id) => ipcRenderer.send('mark-as-read', id),
+  addAccount:     (email) => ipcRenderer.send('add-account', email),
   onAuthStatus:   (cb) => ipcRenderer.on('auth-status',   (_, d) => cb(d)),
   onLoading:      (cb) => ipcRenderer.on('loading',       (_, v) => cb(v)),
   onEmailsLoaded: (cb) => ipcRenderer.on('emails-loaded', (_, e) => cb(e)),
