@@ -5,14 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MSN Mail</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700&family=Tahoma&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+
+  <!-- TITLEBAR -->
   <div class="titlebar">
     <div class="titlebar-left">
       <div class="titlebar-logo">✉</div>
-      <span class="titlebar-title">MSN Mail — Fernando Brigida</span>
+      <span class="titlebar-title">MSN Mail — Fernando Brígida</span>
     </div>
     <div class="titlebar-controls">
       <button class="tb-btn tb-min" id="btnMin">─</button>
@@ -21,21 +23,25 @@
     </div>
   </div>
 
+  <!-- TOOLBAR -->
   <div class="toolbar">
     <div class="toolbar-accounts">
       <button class="acc-btn active" data-account="all">📬 Todas as contas</button>
-      <button class="acc-btn" data-account="gmail"><span class="acc-dot gmail"></span> Gmail</button>
+      <button class="acc-btn" data-account="gmail">
+        <span class="acc-dot gmail"></span> Gmail
+      </button>
       <button class="acc-btn btn-add-account" id="btnAddAccount">➕ Adicionar conta</button>
     </div>
     <div class="toolbar-actions">
       <button class="action-btn" id="btnRefresh">🔄 Verificar</button>
       <button class="action-btn" id="btnSimulate">🧪 Testar</button>
       <div class="search-box">
-        <input type="text" id="searchInput" placeholder="🔍  Pesquisar emails..." />
+        <input type="text" id="searchInput" placeholder="Pesquisar emails..." />
       </div>
     </div>
   </div>
 
+  <!-- MODAL ADICIONAR CONTA -->
   <div class="modal-overlay" id="modalOverlay">
     <div class="modal">
       <div class="modal-header">
@@ -43,7 +49,7 @@
         <button class="modal-close" id="modalClose">✕</button>
       </div>
       <div class="modal-body">
-        <p class="modal-desc">Digite o email Gmail que deseja adicionar.</p>
+        <p class="modal-desc">Digite o email Gmail que deseja adicionar. Você será redirecionado para fazer login no Google.</p>
         <input type="email" id="newAccountEmail" placeholder="seuemail@gmail.com" class="modal-input" />
         <div class="modal-actions">
           <button class="btn-modal-cancel" id="modalCancel">Cancelar</button>
@@ -53,26 +59,35 @@
     </div>
   </div>
 
-  <div class="app-body">
+  <!-- LAYOUT PRINCIPAL -->
+  <div class="app-layout">
+
+    <!-- SIDEBAR -->
     <aside class="sidebar">
-      <div class="sidebar-header">Remetentes</div>
+      <div class="sidebar-section-title">Remetentes</div>
       <div class="sender-list" id="senderList"></div>
     </aside>
+
+    <!-- LISTA DE EMAILS -->
     <div class="email-list-panel">
       <div class="panel-header">
-        <span id="panelTitle">Todos os emails</span>
-        <span class="email-count" id="emailCount">0 emails</span>
+        <span class="panel-title" id="panelTitle">Todos os emails</span>
+        <span class="email-count" id="emailCount">0</span>
       </div>
       <div class="email-list" id="emailList"></div>
     </div>
+
+    <!-- PREVIEW -->
     <div class="email-preview" id="emailPreview">
       <div class="preview-empty">
         <div class="preview-empty-icon">✉</div>
         <p>Selecione um email para visualizar</p>
       </div>
     </div>
+
   </div>
 
+  <!-- STATUS BAR -->
   <div class="statusbar">
     <span id="statusText">Conectando...</span>
     <span class="statusbar-right">MSN Mail v1.0</span>

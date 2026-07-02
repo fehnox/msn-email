@@ -114,7 +114,9 @@ ipcMain.on('simulate-email', () => {
 });
 
 app.whenReady().then(() => {
-  createMainWindow();
-  mainWindow.once('ready-to-show', () => setTimeout(() => initGmail(), 1000));
-});
-app.on('window-all-closed', () => { clearInterval(checkInterval); if (process.platform !== 'darwin') app.quit(); });
+createMainWindow();
+mainWindow = new BrowserWindow({
+  width: 900, height: 650, minWidth: 700, minHeight: 500,
+  frame: false, backgroundColor: '#0d2137',
+  icon: path.join(__dirname, 'src/assets/icon.png'),  // ← adiciona aqui
+  webPreferences: { ... }
